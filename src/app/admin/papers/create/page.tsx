@@ -29,6 +29,7 @@ const PAGE_NO_GAP_PT = 6;
 const KOREAN_FONT_PATH = "/fonts/NotoSansCJKkr-Regular.otf";
 
 let koreanFontBytesPromise: Promise<Uint8Array> | null = null;
+const labelPngBytesCache = new Map<string, Promise<Uint8Array>>();
 
 type ExamPageConfig = {
   sourcePageNo: number;
@@ -172,6 +173,41 @@ async function getKoreanFontBytes(): Promise<Uint8Array> {
     })();
   }
   return koreanFontBytesPromise;
+}
+
+async function getLabelPngBytes(text: string): Promise<Uint8Array> {
+  const cached = labelPngBytesCache.get(text);
+  if (cached) {
+    return cached;
+  }
+
+  const nextPromise = (async () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1400;
+    canvas.height = 52;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      throw new Error("라벨 캔버스 컨텍스트를 가져오지 못했습니다.");
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#4b5563";
+    ctx.font =
+      '500 30px "Pretendard Variable", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif';
+    ctx.textBaseline = "top";
+    ctx.fillText(text, 0, 4);
+
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob((nextBlob) => resolve(nextBlob), "image/png");
+    });
+    if (!blob) {
+      throw new Error("라벨 이미지를 생성하지 못했습니다.");
+    }
+    return new Uint8Array(await blob.arrayBuffer());
+  })();
+
+  labelPngBytesCache.set(text, nextPromise);
+  return nextPromise;
 }
 
 function sanitizeFileNamePart(value: string): string {
@@ -488,16 +524,40 @@ async function renderQuestionsToA4Pdf(images: RenderQuestionImage[]): Promise<Ui
       });
     }
 
-    const labelText = canRenderUnicode
-      ? `p.${images[i].pageNo} | ${images[i].category}`
-      : `p.${images[i].pageNo}`;
-    page.drawText(labelText, {
-      x: slotX + 1,
-      y: slotTopY - PAGE_NO_LABEL_PT,
-      size: 8,
-      font,
-      color: rgb(0.35, 0.35, 0.35),
-    });
+    const fullLabelText = `p.${images[i].pageNo} | ${images[i].category}`;
+    if (canRenderUnicode) {
+      page.drawText(fullLabelText, {
+        x: slotX + 1,
+        y: slotTopY - PAGE_NO_LABEL_PT,
+        size: 8,
+        font,
+        color: rgb(0.35, 0.35, 0.35),
+      });
+    } else {
+      try {
+        const labelPngBytes = await getLabelPngBytes(fullLabelText);
+        const labelImage = await pdfDoc.embedPng(labelPngBytes);
+        const labelHeight = 8.8;
+        const labelWidth = Math.min(
+          slotWidth - 2,
+          (labelImage.width / Math.max(1, labelImage.height)) * labelHeight,
+        );
+        page.drawImage(labelImage, {
+          x: slotX + 1,
+          y: slotTopY - PAGE_NO_LABEL_PT,
+          width: labelWidth,
+          height: labelHeight,
+        });
+      } catch {
+        page.drawText(`p.${images[i].pageNo}`, {
+          x: slotX + 1,
+          y: slotTopY - PAGE_NO_LABEL_PT,
+          size: 8,
+          font,
+          color: rgb(0.35, 0.35, 0.35),
+        });
+      }
+    }
 
     page.drawImage(image, {
       x: drawX,

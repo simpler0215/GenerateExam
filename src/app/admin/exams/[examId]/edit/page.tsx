@@ -1271,12 +1271,15 @@ export default function ExamEditPage() {
 
   return (
     <ClientErrorBoundary title="문제 편집 오류">
-      <main style={{ maxWidth: 1220, margin: "24px auto", padding: "0 16px" }}>
-        <h1 style={{ marginBottom: 10 }}>문제 편집</h1>
-        <p style={{ margin: "4px 0" }}>
-          시험 ID: <b>{examId || "(유효하지 않음)"}</b>
-        </p>
-        <p style={{ margin: "4px 0 18px" }}>
+      <main className="aq-page aq-page-wide">
+        <header className="aq-hero">
+          <p className="aq-kicker">QUESTION EDITOR</p>
+          <h1 className="aq-title">문제 편집</h1>
+          <p className="aq-desc">
+            시험 ID <b>{examId || "(유효하지 않음)"}</b>의 문항 영역과 검수 상태를 페이지 단위로 편집합니다.
+          </p>
+        </header>
+        <p style={{ margin: "14px 0 18px" }}>
           페이지 번호: <b>{pageNo ?? "(유효하지 않음)"}</b>
           {displayPageCount ? (
             <>
@@ -1290,6 +1293,7 @@ export default function ExamEditPage() {
           {currentPageCategory ? `카테고리: ${currentPageCategory}` : "카테고리: -"}
           <button
             type="button"
+            className="aq-btn-primary"
             onClick={() => void goToPreviousPage()}
             disabled={
               !canRenderEditor || !pageNo || pageNo <= 1 || isQuestionLoading || saveState === "saving"
@@ -1300,6 +1304,7 @@ export default function ExamEditPage() {
           </button>
           <button
             type="button"
+            className="aq-btn-primary"
             onClick={() => void goToNextPage()}
             disabled={
               !canRenderEditor ||
@@ -1313,7 +1318,7 @@ export default function ExamEditPage() {
           </button>
         </p>
 
-        <div style={{ display: "flex", gap: 12, marginBottom: 14, alignItems: "center" }}>
+        <div className="aq-panel" style={{ display: "flex", gap: 12, marginBottom: 14, alignItems: "center" }}>
           <button
             type="button"
             onClick={() => void jumpQuestion(activeQNo - 1)}
@@ -1350,7 +1355,7 @@ export default function ExamEditPage() {
           </span>
         </div>
 
-        <div style={{ display: "flex", gap: 8, marginBottom: 14, alignItems: "center", flexWrap: "wrap" }}>
+        <div className="aq-panel" style={{ display: "flex", gap: 8, marginBottom: 14, alignItems: "center", flexWrap: "wrap" }}>
           <span style={{ color: "#444" }}>검수 상태:</span>
           <button
             type="button"
@@ -1406,7 +1411,7 @@ export default function ExamEditPage() {
           </span>
         </div>
 
-        <div style={{ display: "flex", gap: 10, marginBottom: 14, flexWrap: "wrap" }}>
+        <div className="aq-panel" style={{ display: "flex", gap: 10, marginBottom: 14, flexWrap: "wrap" }}>
           <button
             type="button"
             onClick={() => setShowAllQuestions((prev) => !prev)}
@@ -1469,8 +1474,8 @@ export default function ExamEditPage() {
           <span style={{ marginLeft: "auto", color: "#444" }}>{saveStatusText}</span>
         </div>
 
-        {questionError ? <p style={{ color: "crimson" }}>{questionError}</p> : null}
-        {noticeMessage ? <p style={{ color: "#0f766e" }}>{noticeMessage}</p> : null}
+        {questionError ? <p className="aq-status aq-status-error">{questionError}</p> : null}
+        {noticeMessage ? <p className="aq-status aq-status-ok">{noticeMessage}</p> : null}
         {!canRenderEditor ? (
           <p style={{ color: "crimson" }}>
             {isPageOutOfRange
@@ -1488,9 +1493,8 @@ export default function ExamEditPage() {
           }}
         >
           <section
+            className="aq-panel"
             style={{
-              border: "1px solid #ddd",
-              borderRadius: 10,
               padding: 10,
               minHeight: 400,
             }}
@@ -1722,9 +1726,8 @@ export default function ExamEditPage() {
           </section>
 
           <aside
+            className="aq-panel"
             style={{
-              border: "1px solid #ddd",
-              borderRadius: 10,
               padding: 12,
               background: "#fafafa",
             }}
@@ -1760,7 +1763,7 @@ export default function ExamEditPage() {
         </div>
 
         <div style={{ marginTop: 18 }}>
-          <button type="button" onClick={() => void goToPageList()}>
+          <button type="button" className="aq-btn-primary" onClick={() => void goToPageList()}>
             페이지 리스트로 돌아가기
           </button>
         </div>

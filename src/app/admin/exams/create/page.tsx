@@ -221,18 +221,19 @@ export default function CreateExamPage() {
 
   return (
     <ClientErrorBoundary title="시험 생성 오류">
-      <main style={{ maxWidth: 1120, margin: "40px auto", padding: "0 16px" }}>
-        <h1 style={{ fontSize: 28, marginBottom: 16 }}>시험 관리</h1>
-        <p style={{ marginTop: 0, marginBottom: 14 }}>
-          <Link href="/admin/papers/create">문제지 생성 페이지로 이동</Link>
-        </p>
+      <main className="aq-page aq-page-wide">
+        <header className="aq-hero">
+          <p className="aq-kicker">AUTOQUIZ MANAGER</p>
+          <h1 className="aq-title">시험 관리</h1>
+          <p className="aq-desc">시험 목록 확인, 신규 시험 생성, 편집 화면 진입을 한 곳에서 진행합니다.</p>
+          <Link className="aq-link-chip" href="/admin/papers/create">
+            문제지 생성 페이지로 이동
+          </Link>
+        </header>
 
         <section
+          className="aq-panel"
           style={{
-            border: "1px solid #ddd",
-            borderRadius: 10,
-            padding: 12,
-            background: "#fff",
             marginBottom: 16,
           }}
         >
@@ -240,6 +241,7 @@ export default function CreateExamPage() {
             <h2 style={{ margin: 0, fontSize: 18 }}>기존 시험 목록</h2>
             <button
               type="button"
+              className="aq-btn-primary"
               onClick={() => void loadExamList()}
               disabled={isRefreshingList}
               style={{ marginLeft: "auto" }}
@@ -249,7 +251,7 @@ export default function CreateExamPage() {
           </div>
 
           {isLoadingList ? <p style={{ margin: 0 }}>목록을 불러오는 중...</p> : null}
-          {listErrorMessage ? <p style={{ margin: 0, color: "crimson" }}>{listErrorMessage}</p> : null}
+          {listErrorMessage ? <p className="aq-status aq-status-error" style={{ margin: "8px 0 0" }}>{listErrorMessage}</p> : null}
 
           {!isLoadingList && !listErrorMessage && examList.length === 0 ? (
             <p style={{ margin: 0, color: "#555" }}>등록된 시험이 없습니다.</p>
@@ -299,18 +301,16 @@ export default function CreateExamPage() {
         </section>
 
         <div style={{ marginBottom: 12 }}>
-          <button type="button" onClick={() => setShowCreateForm((prev) => !prev)}>
+          <button type="button" className="aq-btn-primary" onClick={() => setShowCreateForm((prev) => !prev)}>
             {showCreateForm ? "신규 생성 닫기" : "신규 시험 생성"}
           </button>
         </div>
 
         {showCreateForm ? (
           <section
+            className="aq-panel"
             style={{
-              border: "1px solid #ddd",
-              borderRadius: 10,
               padding: 16,
-              background: "#fff",
             }}
           >
             <h2 style={{ marginTop: 0, marginBottom: 14, fontSize: 20 }}>신규 시험 생성</h2>
@@ -357,11 +357,9 @@ export default function CreateExamPage() {
 
               {isSubmitting && pdfFile ? <p>업로드 중: {uploadProgress.toFixed(1)}%</p> : null}
 
-              {errorMessage ? (
-                <p style={{ color: "crimson", margin: 0 }}>{errorMessage}</p>
-              ) : null}
+              {errorMessage ? <p className="aq-status aq-status-error" style={{ margin: 0 }}>{errorMessage}</p> : null}
 
-              <button type="submit" disabled={isSubmitting}>
+              <button type="submit" className="aq-btn-primary" disabled={isSubmitting}>
                 {isSubmitting
                   ? pdfFile
                     ? "업로드 중..."

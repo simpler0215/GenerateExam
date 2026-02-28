@@ -497,36 +497,40 @@ export default function ExamPagesPage() {
 
   return (
     <ClientErrorBoundary title="페이지 리스트 오류">
-      <main style={{ maxWidth: 1120, margin: "32px auto", padding: "0 16px" }}>
-        <h1 style={{ marginBottom: 10 }}>페이지 리스트</h1>
-        <p style={{ marginTop: 0, color: "#555" }}>
-          시험 ID: <b>{examId || "(유효하지 않음)"}</b>
-        </p>
+      <main className="aq-page aq-page-wide">
+        <header className="aq-hero">
+          <p className="aq-kicker">PAGE OVERVIEW</p>
+          <h1 className="aq-title">페이지 리스트</h1>
+          <p className="aq-desc">
+            시험 ID <b>{examId || "(유효하지 않음)"}</b>의 페이지별 문항 현황과 카테고리를 확인할 수 있습니다.
+          </p>
+        </header>
 
-        <div style={{ display: "flex", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
-          <button type="button" onClick={() => void loadExam()} disabled={isRefreshing}>
+        <div className="aq-panel" style={{ display: "flex", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
+          <button type="button" className="aq-btn-primary" onClick={() => void loadExam()} disabled={isRefreshing}>
             {isRefreshing ? "새로고침 중..." : "새로고침"}
           </button>
           <button
             type="button"
+            className="aq-btn-primary"
             onClick={() => void rerenderFromUploadedPdf()}
             disabled={isRerendering}
           >
             {isRerendering ? "리렌더링 중..." : "이미지 다시 렌더링"}
           </button>
-          <Link href="/admin/exams/create">시험 목록으로 돌아가기</Link>
+          <Link className="aq-link-chip" href="/admin/exams/create">시험 목록으로 돌아가기</Link>
         </div>
 
         {isLoading ? <p>불러오는 중...</p> : null}
-        {errorMessage ? <p style={{ color: "crimson" }}>{errorMessage}</p> : null}
-        {noticeMessage ? <p style={{ color: "#0f766e" }}>{noticeMessage}</p> : null}
+        {errorMessage ? <p className="aq-status aq-status-error">{errorMessage}</p> : null}
+        {noticeMessage ? <p className="aq-status aq-status-ok">{noticeMessage}</p> : null}
 
         {!isLoading && !errorMessage && !examInfo.exists ? (
           <p>Firestore에 시험 문서가 없습니다.</p>
         ) : null}
 
         {!isLoading && !errorMessage && examInfo.exists ? (
-          <section style={{ marginBottom: 18 }}>
+          <section className="aq-panel" style={{ marginBottom: 18 }}>
             <p style={{ margin: "4px 0" }}>
               과목: <b>{examInfo.subject ?? "-"}</b>
             </p>
@@ -548,14 +552,19 @@ export default function ExamPagesPage() {
         ) : null}
 
         {!isLoading && examInfo.exists && pageRows.length > 0 ? (
-          <section style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 900 }}>
+          <section className="aq-panel" style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 980 }}>
               <thead>
                 <tr>
                   <th
                     style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: "8px 6px" }}
                   >
                     페이지번호
+                  </th>
+                  <th
+                    style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: "8px 6px" }}
+                  >
+                    카테고리
                   </th>
                   <th
                     style={{
@@ -589,25 +598,25 @@ export default function ExamPagesPage() {
                           borderBottom: "1px solid #eee",
                           padding: "8px 6px",
                           fontWeight: 600,
-                          minWidth: 280,
+                          minWidth: 120,
                         }}
                       >
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <span>{row.pageNo}</span>
-                          <span
-                            style={{
-                              border: "1px solid #d1d5db",
-                              borderRadius: 999,
-                              padding: "2px 10px",
-                              fontSize: 12,
-                              fontWeight: 600,
-                              color: "#1f2937",
-                              background: "#f9fafb",
-                            }}
-                          >
-                            {row.category}
-                          </span>
-                        </div>
+                        <span>{row.pageNo}</span>
+                      </td>
+                      <td style={{ borderBottom: "1px solid #eee", padding: "8px 6px" }}>
+                        <span
+                          style={{
+                            border: "1px solid #d1d5db",
+                            borderRadius: 999,
+                            padding: "2px 10px",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: "#1f2937",
+                            background: "#f9fafb",
+                          }}
+                        >
+                          {row.category}
+                        </span>
                       </td>
                       <td style={{ borderBottom: "1px solid #eee", padding: "8px 6px", textAlign: "right" }}>
                         {row.questionCount}
