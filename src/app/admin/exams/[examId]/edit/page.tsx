@@ -1195,6 +1195,53 @@ export default function ExamEditPage() {
     }
   }, [activeQNo, examId, loadQuestion, pageNo]);
 
+  const markAllCurrentPageQuestionsDone = useCallback(async () => {
+    if (!examId || !pageNo) {
+      return;
+    }
+
+    const targets = pageQuestionSummaries.filter((summary) => summary.parts.length > 0);
+    if (targets.length < 1) {
+      setNoticeMessage("현재 페이지에 최종 완료로 변경할 문항이 없습니다.");
+      return;
+    }
+
+    setSaveState("saving");
+    setSaveError(null);
+    setQuestionError(null);
+    setNoticeMessage(null);
+
+    try {
+      for (const summary of targets) {
+        await saveQuestionRecord({
+          examId,
+          qNo: summary.qNo,
+          pageNo,
+          reviewStatus: "done",
+          parts: summary.parts.map((part, index) => ({
+            ...part,
+            order: index + 1,
+            pageNo,
+          })),
+        });
+      }
+
+      if (targets.some((summary) => summary.qNo === activeQNo)) {
+        skipNextAutosaveRef.current = true;
+        setReviewStatus("done");
+      }
+      setSaveState("saved");
+      setLastSavedAt(Date.now());
+      await loadPageQuestionSummary();
+      setNoticeMessage(`현재 페이지 문항 ${targets.length}개를 최종 완료로 변경했습니다.`);
+    } catch (error) {
+      setSaveState("error");
+      const message = getErrorMessage(error);
+      setSaveError(message);
+      setQuestionError(message);
+    }
+  }, [activeQNo, examId, loadPageQuestionSummary, pageNo, pageQuestionSummaries]);
+
   const reviewStatusText = useMemo(() => {
     if (reviewStatus === "reviewed") {
       return "검수 완료";
@@ -1334,6 +1381,19 @@ export default function ExamEditPage() {
             }}
           >
             최종 완료
+          </button>
+          <button
+            type="button"
+            onClick={() => void markAllCurrentPageQuestionsDone()}
+            disabled={
+              !canRenderEditor ||
+              isQuestionLoading ||
+              isPageQuestionSummaryLoading ||
+              saveState === "saving" ||
+              currentPageQuestionCount < 1
+            }
+          >
+            현재 페이지 전체 최종 완료
           </button>
           <button type="button" onClick={() => void restorePreviousSnapshot()} disabled={!hasPreviousSnapshot}>
             최근 스냅샷 복구
