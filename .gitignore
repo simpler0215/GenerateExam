@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# next.js build outputs
+.next/
+out/
+
+# environment
+.env
+.env.*
+!.env.local.example
+
+# logs
+*.log
+npm-debug.log*
+
+# local build/cache artifacts
+*.tsbuildinfo
+
+# generated or temp assets
+.tmp_*
+tmp-*.pdf
+pdfs/
+results/
+
+# OS/editor
+.DS_Store
+Thumbs.db

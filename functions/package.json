@@ -1,0 +1,27 @@
+{
+  "name": "autoquiz-functions",
+  "private": true,
+  "main": "lib/index.js",
+  "engines": {
+    "node": "20"
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "@google-cloud/pubsub": "^5.2.0",
+    "canvas": "2.11.2",
+    "firebase-admin": "^13.6.1",
+    "firebase-functions": "^7.0.5",
+    "pdfjs-dist": "3.11.174"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.0",
+    "typescript": "^5.9.2"
+  }
+}

@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /exams/{examId} {
+      allow read: if true;
+      allow create, update: if
+        request.resource.data.keys().hasOnly([
+          'subject',
+          'examId',
+          'problemPdfPath',
+          'createdAt',
+          'renderSpec'
+        ]) &&
+        request.resource.data.subject is string &&
+        request.resource.data.subject.size() > 0 &&
+        request.resource.data.examId == examId &&
+        request.resource.data.problemPdfPath is string &&
+        request.resource.data.problemPdfPath.matches('^GeneratePDF\\/[^\\/]+\\/' + examId + '\\.pdf$') &&
+        request.resource.data.renderSpec is map &&
+        request.resource.data.renderSpec.dpi == 300 &&
+        request.resource.data.renderSpec.width == 2481 &&
+        request.resource.data.renderSpec.height == 3508;
+
+      allow delete: if false;
+    }
+  }
+}

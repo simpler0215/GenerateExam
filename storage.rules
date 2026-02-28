@@ -1,0 +1,27 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /pdf/{subject}/{examFile} {
+      allow read: if true;
+      allow write: if
+        examFile.matches('^[^/]+\\.pdf$') &&
+        request.resource != null &&
+        request.resource.size < 300 * 1024 * 1024 &&
+        request.resource.contentType.matches('^application/pdf($|;.*)');
+    }
+
+    match /GeneratePDF/{subject}/{examFile} {
+      allow read: if true;
+      allow write: if
+        examFile.matches('^[^/]+\\.pdf$') &&
+        request.resource != null &&
+        request.resource.size < 300 * 1024 * 1024 &&
+        request.resource.contentType.matches('^application/pdf($|;.*)');
+    }
+
+    match /derived/{examId}/{assetType}/{fileName} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}
