@@ -514,7 +514,7 @@ export default function CreatePaperPage() {
   const [examOptions, setExamOptions] = useState<ExamOption[]>([]);
   const [selectedExamId, setSelectedExamId] = useState("");
   const [questionCountInput, setQuestionCountInput] = useState("20");
-  const [includeDraft, setIncludeDraft] = useState(false);
+  const [includeDraft, setIncludeDraft] = useState(true);
   const [questionCandidates, setQuestionCandidates] = useState<QuestionCandidate[]>([]);
   const [categoryRatioInputs, setCategoryRatioInputs] = useState<Record<string, string>>({});
   const [isLoadingExams, setIsLoadingExams] = useState(true);
